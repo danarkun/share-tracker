@@ -50,7 +50,7 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
             var jsonData = await axios.get(this.ComposeURL(symbol));
             const dates = Object.keys(jsonData.data["Time Series (1min)"]);
 
-            // Foreach date, extract the data from it
+            // Foreach data entry returned from server
             dates.forEach(date => {
                 const obj: any = jsonData.data["Time Series (1min)"][date];
                 const newEntry = {
@@ -65,8 +65,8 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
                 ret.push(newEntry);
             })
             return ret;
-        } catch {
-            console.error("ERROR: Couldn't find company")
+        } catch(err) {
+            console.error(err instanceof TypeError ? "Can't resolve symbol" : err);
             return [];
         }
     }
