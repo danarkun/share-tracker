@@ -7,7 +7,8 @@ import { v4 as uuid } from "uuid";
 
 
 const API_KEY = '8URS5R4RTUK16KY0'
-const TYPE = "TIME_SERIES_INTRADAY"
+const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
+const INFO_FUNCTION = "OVERVIEW"
 const INTERVAL = "1min"
 
 interface URL {
@@ -40,32 +41,44 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
     componentDidUpdate() {
     }
 
-    ComposeURL = (symbol: string): string => {
-        return `https://www.alphavantage.co/query?function=${TYPE}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
+    ComposeDataURL = (symbol: string): string => {
+        return `https://www.alphavantage.co/query?function=${DATA_FUNCTION}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
+    }
+
+    ComposeInfoURL = (symbol: string): string => {
+        return `https://www.alphavantage.co/query?function=${INFO_FUNCTION}&symbol=${symbol}&apikey=${API_KEY}`
     }
 
     FetchData = async (symbol: string): Promise<DataEntry[]> => {
         var ret: any[] = [];
         try {
-            var jsonData = await axios.get(this.ComposeURL(symbol));
-            const dates = Object.keys(jsonData.data["Time Series (1min)"]);
+            console.log(symbol);
+            await axios.all([
+                axios.get(this.ComposeInfoURL(symbol)),
+                axios.get(this.ComposeDataURL(symbol))
+            ])
+                .then(axios.spread((d1, d2) => {
+                    var jsonData = d2;
+                    const dates = Object.keys(jsonData.data["Time Series (1min)"]);
 
-            // Foreach data entry returned from server
-            dates.forEach(date => {
-                const obj: any = jsonData.data["Time Series (1min)"][date];
-                const newEntry = {
-                    timeStamp: date,
-                    open: obj["1. open"],
-                    high: obj["2. high"],
-                    low: obj["3. low"],
-                    close: obj["4. close"],
-                    volume: obj["5. volume"],
-                    id: uuid()
-                }
-                ret.push(newEntry);
-            })
+                    // Foreach data entry returned from server
+                    dates.forEach(date => {
+                        const obj: any = jsonData.data["Time Series (1min)"][date];
+                        const newEntry = {
+                            timeStamp: date,
+                            open: obj["1. open"],
+                            high: obj["2. high"],
+                            low: obj["3. low"],
+                            close: obj["4. close"],
+                            volume: obj["5. volume"],
+                            id: uuid()
+                        }
+                        ret.push(newEntry);
+                    })
+                    console.log(d1.data["Name"]);
+                }))
             return ret;
-        } catch(err) {
+        } catch (err) {
             console.error(err instanceof TypeError ? "Can't resolve symbol" : err);
             return [];
         }
