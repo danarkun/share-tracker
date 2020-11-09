@@ -18,10 +18,20 @@ interface URL {
     URL: string
 }
 
-export class PriceList extends React.Component<{}, { objArr: any[], symbol: string }> {
+interface DataEntry {
+    timeStamp: string,
+    open: string,
+    high: string,
+    low: string,
+    close: string,
+    volume: string,
+    id: string
+}
+
+export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], symbol: string }> {
     constructor(props: any) {
         super(props);
-        this.state = { objArr: [], symbol: "" }
+        this.state = { dataEntries: [], symbol: "" }
     }
 
     componentDidMount() {
@@ -31,20 +41,31 @@ export class PriceList extends React.Component<{}, { objArr: any[], symbol: stri
     }
 
     ComposeURL = (symbol: string): string => {
-            return `https://www.alphavantage.co/query?function=${TYPE}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
+        return `https://www.alphavantage.co/query?function=${TYPE}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
     }
 
-    FetchData = async (symbol: string): Promise<any[]> => {
+    FetchData = async (symbol: string): Promise<DataEntry[]> => {
         var ret: any[] = [];
         try {
             var jsonData = await axios.get(this.ComposeURL(symbol));
             const dates = Object.keys(jsonData.data["Time Series (1min)"]);
+
             // Foreach date, extract the data from it
             dates.forEach(date => {
-                ret.push(jsonData.data["Time Series (1min)"][date]);
+                const obj: any = jsonData.data["Time Series (1min)"][date];
+                const newEntry = {
+                    timeStamp: date,
+                    open: obj["1. open"],
+                    high: obj["2. high"],
+                    low: obj["3. low"],
+                    close: obj["4. close"],
+                    volume: obj["5. volume"],
+                    id: uuid()
+                }
+                ret.push(newEntry);
             })
             return ret;
-        }catch {
+        } catch {
             console.error("ERROR: Couldn't find company")
             return [];
         }
@@ -53,9 +74,7 @@ export class PriceList extends React.Component<{}, { objArr: any[], symbol: stri
     ReadData = async () => {
         this.FetchData(this.state.symbol)
             .then(res => {
-                res.forEach(x => x.id = uuid())
-                this.setState({ objArr: res });
-                console.log(res);
+                this.setState({ dataEntries: res });
             });
     }
 
@@ -68,16 +87,17 @@ export class PriceList extends React.Component<{}, { objArr: any[], symbol: stri
                     onChange={(e) => this.setState({ symbol: e })}
                     onRequestSearch={() => this.ReadData()} />
 
-                <div style={{ height: 500, width: 600 }}>
+                <div style={{ height: 500, width: 1000 }}>
                     <DataGrid
                         columns={[
-                            { field: '1. open', headerName: 'OPEN', renderHeader: () => (<strong>{"OPEN"}</strong>) },
-                            { field: '2. high', renderHeader: () => (<strong>{"HIGH"}</strong>) },
-                            { field: '3. low', renderHeader: () => (<strong>{"LOW"}</strong>) },
-                            { field: '4. close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
-                            { field: '5. volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
+                            { field: 'timeStamp', width: 200, renderHeader: () => (<strong>{"TIME"}</strong>) },
+                            { field: 'open', renderHeader: () => (<strong>{"OPEN"}</strong>) },
+                            { field: 'high', renderHeader: () => (<strong>{"HIGH"}</strong>) },
+                            { field: 'low', renderHeader: () => (<strong>{"LOW"}</strong>) },
+                            { field: 'close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
+                            { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
                         ]}
-                        rows={this.state.objArr}
+                        rows={this.state.dataEntries}
                     />
                 </div>
 
