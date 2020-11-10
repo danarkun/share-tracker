@@ -5,19 +5,25 @@ import { DataGrid } from '@material-ui/data-grid';
 import SearchBar from 'material-ui-search-bar'
 import { v4 as uuid } from "uuid";
 import { CompanyProfile } from './CompanyProfile';
-import { CompanyInfo, DataEntry } from '../types/types';
-import { PriceChart } from './PriceChart';
-
+import { CompanyInfo, CompanyData, CompanyEntry, AppActions } from '../types/types';
+import { ThunkDispatch } from 'redux-thunk';
+import { bindActionCreators } from 'redux';
+import { addToWatchList, startAddToWatchlist } from '../actions/watchlistActions';
+import { connect } from 'react-redux';
+import { start } from 'repl';
 
 const API_KEY = '8URS5R4RTUK16KY0'
 const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
 const INFO_FUNCTION = "OVERVIEW"
 const INTERVAL = "1min"
 
-export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], symbol: string, info: CompanyInfo }> {
+type Props = LinkDispatchToProps;
+
+export class PriceList extends React.Component<{}, { dataEntries: CompanyData[], symbol: string, info: CompanyInfo }> {
     constructor(props: any) {
         super(props);
         this.state = { dataEntries: [], symbol: "", info: {name: "", description: "", address: "", sector: ""} }
+        this.AddToWatchlist = this.AddToWatchlist.bind(this);
     }
 
     componentDidMount() {
@@ -34,8 +40,8 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
         return `https://www.alphavantage.co/query?function=${INFO_FUNCTION}&symbol=${symbol}&apikey=${API_KEY}`
     }
 
-    FetchData = async (symbol: string): Promise<DataEntry[]> => {
-        var ret: any[] = [];
+    FetchData = async (symbol: string): Promise<CompanyData[]> => {
+        var ret: CompanyData[] = [];
         try {
             console.log(symbol);
             await axios.all([
@@ -83,6 +89,22 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
             });
     }
 
+    AddToWatchlist = () => {
+        const { name, description, address, sector } = this.state.info;
+        const { open, volume } = this.state.dataEntries[0]
+
+        const newEntry: CompanyEntry = {
+            id: uuid(),
+            name,
+            description,
+            address,
+            sector,
+            open,
+            volume
+        }
+        // this.props.props.localAddToWatchlist(newEntry);
+    }
+
     render() {
         return (
             <div className="Home">
@@ -103,11 +125,22 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
                             { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
                         ]}
                         rows={this.state.dataEntries}
+                        onRowClick={e => console.log(e.data)}
                     />
                 </div>
+                <button onClick={e => this.AddToWatchlist()}>Add To Watchlist</button>
                 <CompanyProfile info={this.state.info} />
-                <PriceChart data={this.state.dataEntries}/>
             </div>
         )
     }
 }
+
+interface LinkDispatchToProps {
+    localAddToWatchlist: (company: CompanyEntry) => void;
+}
+
+const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): LinkDispatchToProps => ({
+    localAddToWatchlist: bindActionCreators(startAddToWatchlist, dispatch)
+})
+
+connect(null, mapDispatchToProps)(PriceList);

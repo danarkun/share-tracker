@@ -1,11 +1,10 @@
 import React from 'react'
-import { PriceChart } from './PriceChart'
-import { PriceList } from './PriceList'
+import { Search } from './Search'
 
 export const Home = () => {
     return (
         <div>
-            <PriceList />
+            <h1>HOME</h1>
         </div>
     )
 }

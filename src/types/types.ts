@@ -1,3 +1,7 @@
+export interface WatchlistState {
+    watchList: CompanyEntry[];
+}
+
 export interface CompanyInfo {
     name: string,
     description: string,
@@ -5,7 +9,7 @@ export interface CompanyInfo {
     sector: string
 }
 
-export interface DataEntry {
+export interface CompanyData {
     timeStamp: string,
     open: string,
     high: string,
@@ -19,3 +23,23 @@ export interface TableEntry {
     time: string,
     price: number
 }
+
+export type CompanyEntry = CompanyInfo & {id: string, name: string, open: string, volume: string};
+
+// Action Types
+export const ADD_TO_WATCHLIST = "ADD_TO_WATCHLIST";
+export const DELETE_FROM_WATCHLIST = "DELETE_FROM_WATCHLIST";
+
+export interface AddToWatchlistAction {
+    type: typeof ADD_TO_WATCHLIST,
+    payload: CompanyEntry
+}
+
+export interface DeleteFromWatchlistAction {
+    type: typeof DELETE_FROM_WATCHLIST,
+    id: string
+}
+
+export type WatchlistActions = AddToWatchlistAction | DeleteFromWatchlistAction;
+
+export type AppActions = WatchlistActions;

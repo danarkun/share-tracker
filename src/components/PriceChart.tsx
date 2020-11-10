@@ -2,15 +2,15 @@ import React from 'react';
 import BarChart from '../specs/BarChart';
 import LineChart from '../specs/LineChart';
 import { SignalListeners, Vega } from 'react-vega';
-import { DataEntry, TableEntry } from '../types/types';
+import { CompanyData, TableEntry } from '../types/types';
 import { Data } from 'vega';
 
 interface PriceChartProps {
-    data: DataEntry[];
+    data: CompanyData[];
 }
 
 interface PriceChartState {
-    data: DataEntry[];
+    data: CompanyData[];
 }
 
 export class PriceChart extends React.Component<PriceChartProps, PriceChartState> {
@@ -40,7 +40,7 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
         console.log("COMPONENT UPDATED");
     }
 
-    ConstructTable(dataEntries: DataEntry[]) {
+    ConstructTable(dataEntries: CompanyData[]) {
         var res: TableEntry[] = [];
         dataEntries.forEach(entry => res.push({ time: entry.timeStamp, price: parseFloat(entry.high) }));
         var data = {
