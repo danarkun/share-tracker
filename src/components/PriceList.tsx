@@ -5,23 +5,14 @@ import { DataGrid } from '@material-ui/data-grid';
 import SearchBar from 'material-ui-search-bar'
 import { v4 as uuid } from "uuid";
 import { CompanyProfile } from './CompanyProfile';
-import { CompanyInfo } from '../types/types';
+import { CompanyInfo, DataEntry } from '../types/types';
+import { PriceChart } from './PriceChart';
 
 
 const API_KEY = '8URS5R4RTUK16KY0'
 const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
 const INFO_FUNCTION = "OVERVIEW"
 const INTERVAL = "1min"
-
-interface DataEntry {
-    timeStamp: string,
-    open: string,
-    high: string,
-    low: string,
-    close: string,
-    volume: string,
-    id: string
-}
 
 export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], symbol: string, info: CompanyInfo }> {
     constructor(props: any) {
@@ -35,11 +26,11 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
     componentDidUpdate() {
     }
 
-    ComposeDataURL = (symbol: string): string => {
+    static ComposeDataURL = (symbol: string): string => {
         return `https://www.alphavantage.co/query?function=${DATA_FUNCTION}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
     }
 
-    ComposeInfoURL = (symbol: string): string => {
+    static ComposeInfoURL = (symbol: string): string => {
         return `https://www.alphavantage.co/query?function=${INFO_FUNCTION}&symbol=${symbol}&apikey=${API_KEY}`
     }
 
@@ -48,8 +39,8 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
         try {
             console.log(symbol);
             await axios.all([
-                axios.get(this.ComposeInfoURL(symbol)),
-                axios.get(this.ComposeDataURL(symbol))
+                axios.get(PriceList.ComposeInfoURL(symbol)),
+                axios.get(PriceList.ComposeDataURL(symbol))
             ])
                 .then(axios.spread((d1, d2) => {
                     var jsonData = d2;
@@ -75,7 +66,6 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
                         description: d1.data["Description"],
                         address: d1.data["Address"],
                         sector: d1.data["Sector"]
-
                     }
                     this.setState({ info: companyInfo })
                 }))
@@ -115,7 +105,8 @@ export class PriceList extends React.Component<{}, { dataEntries: DataEntry[], s
                         rows={this.state.dataEntries}
                     />
                 </div>
-                <CompanyProfile name={this.state.info.name} description={this.state.info.description} address={this.state.info.address} sector={this.state.info.sector} />
+                <CompanyProfile info={this.state.info} />
+                <PriceChart data={this.state.dataEntries}/>
             </div>
         )
     }

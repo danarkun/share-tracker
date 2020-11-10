@@ -5,12 +5,12 @@ interface CompanyProfileProps {
     info: CompanyInfo;
 }
 
-export const CompanyProfile:FC<CompanyInfo> = (props) => {
+export const CompanyProfile:FC<CompanyProfileProps> = (props) => {
     return (
         <div>
-            {props.name == "" ? "" : (<p><b>Company: </b>{props.name}</p>)}
-            {props.sector == "" ? "" : (<p><b>Sector: </b>{props.sector}</p>)}
-            {props.address == "" ? "" : (<p><b>Address: </b>{props.address}</p>)}
+            {props.info.name == "" ? "" : (<p><b>Company: </b>{props.info.name}</p>)}
+            {props.info.sector == "" ? "" : (<p><b>Sector: </b>{props.info.sector}</p>)}
+            {props.info.address == "" ? "" : (<p><b>Address: </b>{props.info.address}</p>)}
         </div>
     )
 }

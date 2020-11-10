@@ -5,4 +5,12 @@ export interface CompanyInfo {
     sector: string
 }
 
-// Action Creators
+export interface DataEntry {
+    timeStamp: string,
+    open: string,
+    high: string,
+    low: string,
+    close: string,
+    volume: string,
+    id: string
+}
