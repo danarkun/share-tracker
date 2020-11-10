@@ -14,3 +14,8 @@ export interface DataEntry {
     volume: string,
     id: string
 }
+
+export interface TableEntry {
+    time: string,
+    price: number
+}
