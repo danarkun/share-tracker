@@ -1,7 +1,8 @@
 import React from 'react'
 import { uniqueId } from 'vega-lite'
 import { v4 as uuid } from 'uuid'
-import { ADD_TO_WATCHLIST, WatchlistState, WatchlistActions, DELETE_FROM_WATCHLIST, CompanyEntry } from '../types/types'
+import { ADD_TO_WATCHLIST, WatchlistState, WatchlistActions, DELETE_FROM_WATCHLIST, CompanyEntry, CLEAR_WATCHLIST } from '../types/types'
+import { AssertCompanyInList } from '../helpers/utils'
 
 const initialState: WatchlistState = {
     watchlistEntries: [
@@ -18,15 +19,6 @@ const initialState: WatchlistState = {
     ]
 }
 
-// Check if we have already added a company to our watchlist
-const AssertCompanyInList = (list: WatchlistState, company: CompanyEntry): boolean => {
-    for (var i = 0; i < list.watchlistEntries.length; i++) {
-        if (list.watchlistEntries[i].name == company.name)
-            return false;
-    }
-    return true;
-}
-
 export const watchlistReducer = (state = initialState, action: WatchlistActions): WatchlistState => {
     switch (action.type) {
         case ADD_TO_WATCHLIST:
@@ -38,6 +30,11 @@ export const watchlistReducer = (state = initialState, action: WatchlistActions)
             return {
                 ...state,
                 watchlistEntries: state.watchlistEntries.filter(entry => entry.id != action.id)
+            }
+        case CLEAR_WATCHLIST:
+            return {
+                ...state,
+                watchlistEntries: []
             }
         default:
             return state;

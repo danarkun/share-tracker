@@ -29,6 +29,7 @@ export type CompanyEntry = CompanyInfo & {id: string, open: string, close: strin
 // Action Types
 export const ADD_TO_WATCHLIST = "ADD_TO_WATCHLIST";
 export const DELETE_FROM_WATCHLIST = "DELETE_FROM_WATCHLIST";
+export const CLEAR_WATCHLIST = "CLEAR_WATCHLIST";
 
 export interface AddToWatchlistAction {
     type: typeof ADD_TO_WATCHLIST,
@@ -40,6 +41,10 @@ export interface DeleteFromWatchlistAction {
     id: string
 }
 
-export type WatchlistActions = AddToWatchlistAction | DeleteFromWatchlistAction;
+export interface ClearWatchlistAction {
+    type: typeof CLEAR_WATCHLIST
+}
+
+export type WatchlistActions = AddToWatchlistAction | DeleteFromWatchlistAction | ClearWatchlistAction;
 
 export type AppActions = WatchlistActions;
