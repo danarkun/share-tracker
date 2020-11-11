@@ -20,6 +20,8 @@ const INTERVAL = "1min"
 
 type Props = LinkDispatchProps;
 
+enum StatusCodes { Fetching, Succeeded, Failed, Awaiting_Input }
+
 const initialDataState: CompanyData[] = [];
 const initialCompanyInfo: CompanyInfo = {
     name: "",
@@ -32,7 +34,7 @@ export const PriceList = (props: Props) => {
     const [dataEntries, setEntries] = useState(initialDataState);
     const [symbol, setSymbol] = useState("");
     const [companyInfo, setInfo] = useState(initialCompanyInfo);
-    const [validated, setValidity] = useState(false);
+    const [status, setStatus] = useState(StatusCodes.Awaiting_Input);
 
     const ComposeDataURL = (symbol: string): string => {
         return `https://www.alphavantage.co/query?function=${DATA_FUNCTION}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
@@ -46,7 +48,8 @@ export const PriceList = (props: Props) => {
         let ret: CompanyData[] = [];
         try {
             // Wait to validate current request
-            setValidity(false);
+
+            setStatus(StatusCodes.Fetching);
 
             console.log(symbol);
             await axios.all([
@@ -79,12 +82,12 @@ export const PriceList = (props: Props) => {
                         sector: d1.data["Sector"]
                     }
                     setInfo(companyInfo);
-                    setValidity(true);
+                    setStatus(StatusCodes.Succeeded);
                 }))
             return ret;
         } catch (err) {
             console.error(err instanceof TypeError ? "Can't resolve symbol" : err);
-            setValidity(false);
+            setStatus(StatusCodes.Failed);
             return [];
         }
     }
@@ -134,9 +137,11 @@ export const PriceList = (props: Props) => {
                 // onRowClick={e => console.log(e.data)}
                 />
             </div>
-            {/* TODO only add button if successfully searched and company not already added */}
-            {!validated ? "" : <button onClick={AddToWatchlist}>Add To Watchlist</button>}
-            <CompanyProfile info={companyInfo} />
+            {status != StatusCodes.Succeeded ? <p><b>Status: </b>{StatusCodes[status]}</p> :
+                <div>
+                    <button onClick={AddToWatchlist}>Add To Watchlist</button>
+                    <CompanyProfile info={companyInfo} />
+                </div>}
         </div>
     )
 }
