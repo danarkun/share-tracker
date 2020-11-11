@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import axios from 'axios';
 import '../App.css';
 import { DataGrid } from '@material-ui/data-grid';
 import SearchBar from 'material-ui-search-bar'
 import { v4 as uuid } from "uuid";
-import { CompanyProfile } from './CompanyProfile';
+import { CompanyPreview } from './CompanyPreview';
 import { CompanyInfo, CompanyData, CompanyEntry, AppActions, WatchlistState } from '../types/types';
 import { ThunkDispatch } from 'redux-thunk';
 import { bindActionCreators } from 'redux';
 import { startAddToWatchlist } from '../actions/watchlistActions';
 import { connect } from 'react-redux';
-import { RootState } from '../store';
 
 const API_KEY = '8URS5R4RTUK16KY0'
 const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
 const INFO_FUNCTION = "OVERVIEW"
 const INTERVAL = "1min"
-
-type Props = LinkDispatchProps;
-
 enum StatusCodes { Fetching, Succeeded, Failed, Awaiting_Input }
+
+interface PriceListProps {
+    addTowatchlist(company: CompanyEntry): void
+}
 
 const initialDataState: CompanyData[] = [];
 const initialCompanyInfo: CompanyInfo = {
@@ -29,7 +29,7 @@ const initialCompanyInfo: CompanyInfo = {
     sector: ""
 }
 
-export const PriceList = (props: Props) => {
+const PriceList:FC<PriceListProps> = (props) => {
     const [dataEntries, setEntries] = useState(initialDataState);
     const [symbol, setSymbol] = useState("");
     const [companyInfo, setInfo] = useState(initialCompanyInfo);
@@ -46,8 +46,7 @@ export const PriceList = (props: Props) => {
     const FetchData = async (symbol: string): Promise<CompanyData[]> => {
         let ret: CompanyData[] = [];
         try {
-            // Wait to validate current request
-
+            // Fetching
             setStatus(StatusCodes.Fetching);
 
             console.log(symbol);
@@ -112,7 +111,7 @@ export const PriceList = (props: Props) => {
             close,
             volume
         }
-        props.localAddToWatchlist(newEntry);
+        props.addTowatchlist(newEntry);
     }
     return (
         <div className="ShareTracker">
@@ -139,26 +138,18 @@ export const PriceList = (props: Props) => {
             {status !== StatusCodes.Succeeded ? <p><b>Status: </b>{StatusCodes[status]}</p> :
                 <div>
                     <button onClick={AddToWatchlist}>Add To Watchlist</button>
-                    <CompanyProfile info={companyInfo} />
+                    <CompanyPreview info={companyInfo} />
                 </div>}
         </div>
     )
-}
-
-interface LinkStateProps {
-    watchlist: WatchlistState;
 }
 
 interface LinkDispatchProps {
     localAddToWatchlist: (company: CompanyEntry) => void;
 }
 
-const mapStateToProps = (state: RootState): LinkStateProps => ({
-    watchlist: state.watchlist
-})
-
 const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): LinkDispatchProps => ({
     localAddToWatchlist: bindActionCreators(startAddToWatchlist, dispatch)
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(PriceList);
+export default connect(null, mapDispatchToProps)(PriceList);

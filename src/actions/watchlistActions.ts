@@ -13,7 +13,7 @@ export const deleteFromWatchList = (id: string): AppActions => ({
     id: id
 });
 
-export const clearWatchList = (): AppActions => ({
+export const clearWatchlist = (): AppActions => ({
     type: CLEAR_WATCHLIST
 });
 
@@ -35,6 +35,6 @@ export const startDeleteFromWatchlist = (id: string) => {
 
 export const startClearWatchlist = () => {
     return (dispatch: Dispatch<AppActions>, getState: () => RootState) => {
-        dispatch(clearWatchList())
+        dispatch(clearWatchlist())
     }
 }

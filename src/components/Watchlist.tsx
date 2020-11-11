@@ -1,5 +1,5 @@
 import { DataGrid } from '@material-ui/data-grid';
-import React from 'react'
+import React, { FC } from 'react'
 import { AppActions, CompanyEntry, WatchlistState } from '../types/types'
 import { RootState } from '../store'
 import { ThunkDispatch } from 'redux-thunk';
@@ -7,10 +7,11 @@ import { bindActionCreators } from 'redux';
 import { startAddToWatchlist, startClearWatchlist, startDeleteFromWatchlist } from '../actions/watchlistActions';
 import { connect } from 'react-redux'
 
+// TODO CONVERT TO PASSED STATE/DISPATCH PROPS
 // Elicit watched companies from store
 type Props = LinkStateProps & LinkDispatchProps;
 
-export const Watchlist = (props: Props) => {
+const Watchlist:FC<Props> = (props: Props) => {
     const { watchlist } = props;
 
     return (
@@ -53,7 +54,4 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): Link
     clearWatchlist: bindActionCreators(startClearWatchlist, dispatch)
 })
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Watchlist);
+export default connect(mapStateToProps, mapDispatchToProps)(Watchlist);
