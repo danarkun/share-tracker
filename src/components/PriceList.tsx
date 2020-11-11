@@ -115,7 +115,7 @@ export const PriceList = (props: Props) => {
         props.localAddToWatchlist(newEntry);
     }
     return (
-        <div className="Home">
+        <div className="ShareTracker">
             <h1>Share Tracker</h1>
             <SearchBar
                 value={symbol}
