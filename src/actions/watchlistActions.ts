@@ -3,19 +3,15 @@ import { RootState } from "../store";
 import { ADD_TO_WATCHLIST, AppActions, CompanyEntry, DELETE_FROM_WATCHLIST } from "../types/types";
 
 // Actions Creators
-export const addToWatchList = (company: CompanyEntry): AppActions => {
-    return {
-        type: ADD_TO_WATCHLIST,
-        payload: company
-    }
-}
+export const addToWatchList = (company: CompanyEntry): AppActions => ({
+    type: ADD_TO_WATCHLIST,
+    payload: company
+});
 
-export const deleteFromWatchList = (id: string): AppActions => {
-    return {
-        type: DELETE_FROM_WATCHLIST,
-        id: id
-    }
-}
+export const deleteFromWatchList = (id: string): AppActions => ({
+    type: DELETE_FROM_WATCHLIST,
+    id: id
+});
 
 export const startAddToWatchlist = (company: CompanyEntry) => {
     return (dispatch: Dispatch<AppActions>, getState: () => RootState) => {

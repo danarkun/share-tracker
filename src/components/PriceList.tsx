@@ -8,45 +8,44 @@ import { CompanyProfile } from './CompanyProfile';
 import { CompanyInfo, CompanyData, CompanyEntry, AppActions } from '../types/types';
 import { ThunkDispatch } from 'redux-thunk';
 import { bindActionCreators } from 'redux';
-import { addToWatchList, startAddToWatchlist } from '../actions/watchlistActions';
+import { startAddToWatchlist } from '../actions/watchlistActions';
 import { connect } from 'react-redux';
-import { start } from 'repl';
 
 const API_KEY = '8URS5R4RTUK16KY0'
 const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
 const INFO_FUNCTION = "OVERVIEW"
 const INTERVAL = "1min"
 
-type Props = LinkDispatchToProps;
+type Props = LinkDispatchProps;
 
-export class PriceList extends React.Component<{}, { dataEntries: CompanyData[], symbol: string, info: CompanyInfo }> {
-    constructor(props: any) {
-        super(props);
-        this.state = { dataEntries: [], symbol: "", info: {name: "", description: "", address: "", sector: ""} }
-        this.AddToWatchlist = this.AddToWatchlist.bind(this);
-    }
+const initialDataState: CompanyData[] = [];
+const initialCompanyInfo: CompanyInfo = {
+    name: "",
+    description: "",
+    address: "",
+    sector: ""
+}
 
-    componentDidMount() {
-    }
+export const PriceList = (props: Props) => {
+    const [dataEntries, setEntries] = useState(initialDataState);
+    const [symbol, setSymbol] = useState("");
+    const [companyInfo, setInfo] = useState(initialCompanyInfo);
 
-    componentDidUpdate() {
-    }
-
-    static ComposeDataURL = (symbol: string): string => {
+    const ComposeDataURL = (symbol: string): string => {
         return `https://www.alphavantage.co/query?function=${DATA_FUNCTION}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`
     }
 
-    static ComposeInfoURL = (symbol: string): string => {
+    const ComposeInfoURL = (symbol: string): string => {
         return `https://www.alphavantage.co/query?function=${INFO_FUNCTION}&symbol=${symbol}&apikey=${API_KEY}`
     }
 
-    FetchData = async (symbol: string): Promise<CompanyData[]> => {
+    const FetchData = async (symbol: string): Promise<CompanyData[]> => {
         var ret: CompanyData[] = [];
         try {
             console.log(symbol);
             await axios.all([
-                axios.get(PriceList.ComposeInfoURL(symbol)),
-                axios.get(PriceList.ComposeDataURL(symbol))
+                axios.get(ComposeInfoURL(symbol)),
+                axios.get(ComposeDataURL(symbol))
             ])
                 .then(axios.spread((d1, d2) => {
                     var jsonData = d2;
@@ -73,7 +72,7 @@ export class PriceList extends React.Component<{}, { dataEntries: CompanyData[],
                         address: d1.data["Address"],
                         sector: d1.data["Sector"]
                     }
-                    this.setState({ info: companyInfo })
+                    setInfo(companyInfo);
                 }))
             return ret;
         } catch (err) {
@@ -82,16 +81,16 @@ export class PriceList extends React.Component<{}, { dataEntries: CompanyData[],
         }
     }
 
-    ReadData = async () => {
-        this.FetchData(this.state.symbol)
+    const ReadData = async () => {
+        FetchData(symbol)
             .then(res => {
-                this.setState({ dataEntries: res });
+                setEntries(res);
             });
     }
 
-    AddToWatchlist = () => {
-        const { name, description, address, sector } = this.state.info;
-        const { open, volume } = this.state.dataEntries[0]
+    const AddToWatchlist = () => {
+        const { name, description, address, sector } = companyInfo;
+        const { open, volume } = dataEntries[0] ?? { open: 10, volume : 10 };
 
         const newEntry: CompanyEntry = {
             id: uuid(),
@@ -102,45 +101,42 @@ export class PriceList extends React.Component<{}, { dataEntries: CompanyData[],
             open,
             volume
         }
-        // this.props.props.localAddToWatchlist(newEntry);
+        props.localAddToWatchlist(newEntry);
     }
+    return (
+        <div className="Home">
+            <h1>Share Tracker</h1>
+            <SearchBar
+                value={symbol}
+                onChange={(e) => setSymbol(e)}
+                onRequestSearch={() => ReadData()} />
 
-    render() {
-        return (
-            <div className="Home">
-                <h1>Share Tracker</h1>
-                <SearchBar
-                    value={this.state.symbol}
-                    onChange={(e) => this.setState({ symbol: e })}
-                    onRequestSearch={() => this.ReadData()} />
-
-                <div style={{ height: 500, width: 1000 }}>
-                    <DataGrid
-                        columns={[
-                            { field: 'timeStamp', width: 200, renderHeader: () => (<strong>{"TIME"}</strong>) },
-                            { field: 'open', renderHeader: () => (<strong>{"OPEN"}</strong>) },
-                            { field: 'high', renderHeader: () => (<strong>{"HIGH"}</strong>) },
-                            { field: 'low', renderHeader: () => (<strong>{"LOW"}</strong>) },
-                            { field: 'close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
-                            { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
-                        ]}
-                        rows={this.state.dataEntries}
-                        onRowClick={e => console.log(e.data)}
-                    />
-                </div>
-                <button onClick={e => this.AddToWatchlist()}>Add To Watchlist</button>
-                <CompanyProfile info={this.state.info} />
+            <div style={{ height: 500, width: 1000 }}>
+                <DataGrid
+                    columns={[
+                        { field: 'timeStamp', width: 200, renderHeader: () => (<strong>{"TIME"}</strong>) },
+                        { field: 'open', renderHeader: () => (<strong>{"OPEN"}</strong>) },
+                        { field: 'high', renderHeader: () => (<strong>{"HIGH"}</strong>) },
+                        { field: 'low', renderHeader: () => (<strong>{"LOW"}</strong>) },
+                        { field: 'close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
+                        { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
+                    ]}
+                    rows={dataEntries}
+                    onRowClick={e => console.log(e.data)}
+                />
             </div>
-        )
-    }
+            <button onClick={e => AddToWatchlist()}>Add To Watchlist</button>
+            <CompanyProfile info={companyInfo} />
+        </div>
+    )
 }
 
-interface LinkDispatchToProps {
+interface LinkDispatchProps {
     localAddToWatchlist: (company: CompanyEntry) => void;
 }
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): LinkDispatchToProps => ({
+const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): LinkDispatchProps => ({
     localAddToWatchlist: bindActionCreators(startAddToWatchlist, dispatch)
 })
 
-connect(null, mapDispatchToProps)(PriceList);
+export default connect(null, mapDispatchToProps)(PriceList);

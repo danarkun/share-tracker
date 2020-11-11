@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink, Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import PriceList from '../components/PriceList';
 import { Search } from '../components/Search';
 import { Watchlist } from '../components/Watchlist';
 
@@ -39,7 +40,7 @@ const AppRouter = () => {
                         <Redirect exact from="/" to="/Home" />
                     )} />
                     <Route render={() => <Redirect to={{ pathname: "/Home" }} />} />
-                    <Route path="/Search" component={Search} />
+                    <Route path="/Search" component={PriceList} />
                     {/* <Route path="/Home" component={Home} /> */}
                     <Route path="/Watchlist" component={Watchlist} />
                 </ContentColumn>

@@ -4,7 +4,7 @@ import { PriceList } from './PriceList'
 export const Search = () => {
     return (
         <div>
-            <PriceList />
+            {/* <PriceList /> */}
         </div>
     )
 }
