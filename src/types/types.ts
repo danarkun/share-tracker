@@ -1,5 +1,5 @@
 export interface WatchlistState {
-    watchList: CompanyEntry[];
+    watchlistEntries: CompanyEntry[];
 }
 
 export interface CompanyInfo {
@@ -24,7 +24,7 @@ export interface TableEntry {
     price: number
 }
 
-export type CompanyEntry = CompanyInfo & {id: string, name: string, open: string, volume: string};
+export type CompanyEntry = CompanyInfo & {id: string, open: string, close: string, volume: string};
 
 // Action Types
 export const ADD_TO_WATCHLIST = "ADD_TO_WATCHLIST";

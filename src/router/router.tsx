@@ -1,9 +1,9 @@
 import React from 'react'
 import { NavLink, Redirect, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import { Home } from '../components/Home';
 import PriceList from '../components/PriceList';
-import { Search } from '../components/Search';
-import { Watchlist } from '../components/Watchlist';
+import Watchlist from '../components/Watchlist';
 
 const ContentColumn = styled.div`
 position: absolute;
@@ -41,7 +41,7 @@ const AppRouter = () => {
                     )} />
                     <Route render={() => <Redirect to={{ pathname: "/Home" }} />} />
                     <Route path="/Search" component={PriceList} />
-                    {/* <Route path="/Home" component={Home} /> */}
+                    <Route path="/Home" component={Home} />
                     <Route path="/Watchlist" component={Watchlist} />
                 </ContentColumn>
             </Switch>

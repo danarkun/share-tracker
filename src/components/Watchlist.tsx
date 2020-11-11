@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 type Props = LinkStateProps & LinkDispatchProps;
 
 export const Watchlist = (props: Props) => {
+    const { watchlist } = props;
     return (
         <div>
             <h1>Watchlist</h1>
@@ -22,7 +23,7 @@ export const Watchlist = (props: Props) => {
                         { field: 'close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
                         { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
                     ]}
-                    rows={[]}
+                    rows={watchlist.watchlistEntries}
                     onRowClick={e => console.log(e.data)}
                 />
             </div>
@@ -31,7 +32,7 @@ export const Watchlist = (props: Props) => {
 }
 
 interface LinkStateProps {
-    watchList: WatchlistState;
+    watchlist: WatchlistState;
 }
 
 interface LinkDispatchProps {
@@ -40,7 +41,7 @@ interface LinkDispatchProps {
 }
 
 const mapStateToProps = (state: RootState): LinkStateProps => ({
-    watchList: state.watchlist
+    watchlist: state.watchlist
 })
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): LinkDispatchProps => ({

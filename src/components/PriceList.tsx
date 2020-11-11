@@ -5,11 +5,13 @@ import { DataGrid } from '@material-ui/data-grid';
 import SearchBar from 'material-ui-search-bar'
 import { v4 as uuid } from "uuid";
 import { CompanyProfile } from './CompanyProfile';
-import { CompanyInfo, CompanyData, CompanyEntry, AppActions } from '../types/types';
+import { CompanyInfo, CompanyData, CompanyEntry, AppActions, WatchlistState } from '../types/types';
 import { ThunkDispatch } from 'redux-thunk';
 import { bindActionCreators } from 'redux';
 import { startAddToWatchlist } from '../actions/watchlistActions';
 import { connect } from 'react-redux';
+import { RootState } from '../store';
+import { entries } from 'vega-lite';
 
 const API_KEY = '8URS5R4RTUK16KY0'
 const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
@@ -90,7 +92,7 @@ export const PriceList = (props: Props) => {
 
     const AddToWatchlist = () => {
         const { name, description, address, sector } = companyInfo;
-        const { open, volume } = dataEntries[0] ?? { open: 10, volume : 10 };
+        const { open, close, volume } = dataEntries[0] ?? { open: 10, close: 11, volume : 10 };
 
         const newEntry: CompanyEntry = {
             id: uuid(),
@@ -99,6 +101,7 @@ export const PriceList = (props: Props) => {
             address,
             sector,
             open,
+            close,
             volume
         }
         props.localAddToWatchlist(newEntry);
@@ -122,21 +125,30 @@ export const PriceList = (props: Props) => {
                         { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
                     ]}
                     rows={dataEntries}
-                    onRowClick={e => console.log(e.data)}
+                    // onRowClick={e => console.log(e.data)}
                 />
             </div>
-            <button onClick={e => AddToWatchlist()}>Add To Watchlist</button>
+            {/* TODO only add button if successfully searched and company not already added */}
+            {dataEntries.length == 0 ? "" : <button onClick={e => AddToWatchlist()}>Add To Watchlist</button>}
             <CompanyProfile info={companyInfo} />
         </div>
     )
+}
+
+interface LinkStateProps {
+    watchlist: WatchlistState;
 }
 
 interface LinkDispatchProps {
     localAddToWatchlist: (company: CompanyEntry) => void;
 }
 
+const mapStateToProps = (state: RootState): LinkStateProps => ({
+    watchlist: state.watchlist
+})
+
 const mapDispatchToProps = (dispatch: ThunkDispatch<any, any, AppActions>): LinkDispatchProps => ({
     localAddToWatchlist: bindActionCreators(startAddToWatchlist, dispatch)
 })
 
-export default connect(null, mapDispatchToProps)(PriceList);
+export default connect(mapStateToProps, mapDispatchToProps)(PriceList);

@@ -20,10 +20,6 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
     }
 
     shouldComponentUpdate(nextProps: PriceChartProps, nextState: PriceChartState) {
-        console.log("OLD PROPS:");
-        console.log(this.props.data);
-        console.log("NEXT PROPS:");
-        console.log(nextProps.data);
         if (nextProps.data != this.props.data) {
             console.log(`Updating data`)
             this.state = { data: nextProps.data };
