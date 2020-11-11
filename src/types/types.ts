@@ -1,3 +1,6 @@
+// Global Constant Strings
+export const DATA_WATCHLIST = "DATA_WATCHLIST";
+
 export interface WatchlistState {
     watchlistEntries: CompanyEntry[];
 }
