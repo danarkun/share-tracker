@@ -19,10 +19,10 @@ export const Watchlist = (props: Props) => {
             <div style={{ height: 500, width: 1000 }}>
                 <DataGrid
                     columns={[
-                        { field: 'name', width: 200, renderHeader: () => (<strong>{"TIME"}</strong>) },
-                        { field: 'open', renderHeader: () => (<strong>{"OPEN"}</strong>) },
-                        { field: 'close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
-                        { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
+                        { field: 'name', type: "string", width: 500, renderHeader: () => (<strong>{"COMPANY"}</strong>) },
+                        { field: 'open', type: "number", renderHeader: () => (<strong>{"OPEN"}</strong>) },
+                        { field: 'close', type: "number", renderHeader: () => (<strong>{"CLOSE"}</strong>) },
+                        { field: 'volume', type: "number", renderHeader: () => (<strong>{"VOLUME"}</strong>) },
                     ]}
                     rows={watchlist.watchlistEntries}
                     onRowClick={e => console.log(e.data)}

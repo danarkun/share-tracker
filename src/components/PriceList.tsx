@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import '../App.css';
 import { DataGrid } from '@material-ui/data-grid';
@@ -11,7 +11,6 @@ import { bindActionCreators } from 'redux';
 import { startAddToWatchlist } from '../actions/watchlistActions';
 import { connect } from 'react-redux';
 import { RootState } from '../store';
-import { entries } from 'vega-lite';
 
 const API_KEY = '8URS5R4RTUK16KY0'
 const DATA_FUNCTION = "TIME_SERIES_INTRADAY"
@@ -126,18 +125,18 @@ export const PriceList = (props: Props) => {
             <div style={{ height: 500, width: 1000 }}>
                 <DataGrid
                     columns={[
-                        { field: 'timeStamp', width: 200, renderHeader: () => (<strong>{"TIME"}</strong>) },
-                        { field: 'open', renderHeader: () => (<strong>{"OPEN"}</strong>) },
-                        { field: 'high', renderHeader: () => (<strong>{"HIGH"}</strong>) },
-                        { field: 'low', renderHeader: () => (<strong>{"LOW"}</strong>) },
-                        { field: 'close', renderHeader: () => (<strong>{"CLOSE"}</strong>) },
-                        { field: 'volume', renderHeader: () => (<strong>{"VOLUME"}</strong>) },
+                        { field: 'timeStamp', type: "string", width: 200, renderHeader: () => (<strong>{"TIME"}</strong>) },
+                        { field: 'open', type: "number", renderHeader: () => (<strong>{"OPEN"}</strong>) },
+                        { field: 'high', type: "number", renderHeader: () => (<strong>{"HIGH"}</strong>) },
+                        { field: 'low', type: "number", renderHeader: () => (<strong>{"LOW"}</strong>) },
+                        { field: 'close', type: "number", renderHeader: () => (<strong>{"CLOSE"}</strong>) },
+                        { field: 'volume', type: "number", renderHeader: () => (<strong>{"VOLUME"}</strong>) },
                     ]}
                     rows={dataEntries}
                 // onRowClick={e => console.log(e.data)}
                 />
             </div>
-            {status != StatusCodes.Succeeded ? <p><b>Status: </b>{StatusCodes[status]}</p> :
+            {status !== StatusCodes.Succeeded ? <p><b>Status: </b>{StatusCodes[status]}</p> :
                 <div>
                     <button onClick={AddToWatchlist}>Add To Watchlist</button>
                     <CompanyProfile info={companyInfo} />

@@ -5,18 +5,7 @@ import { ADD_TO_WATCHLIST, WatchlistState, WatchlistActions, DELETE_FROM_WATCHLI
 import { AssertCompanyInList } from '../helpers/utils'
 
 const initialState: WatchlistState = {
-    watchlistEntries: [
-        {
-            name: "Test",
-            description: "Test Company",
-            address: "123 Fake Street",
-            sector: "Tech",
-            open: "10",
-            close: "11",
-            volume: "10",
-            id: "42069",
-        }
-    ]
+    watchlistEntries: []
 }
 
 export const watchlistReducer = (state = initialState, action: WatchlistActions): WatchlistState => {
